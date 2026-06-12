@@ -98,6 +98,28 @@ def _sync_save_interaction_to_chroma(
         print(f"[RAG] Erro ao salvar interacao no Chroma Cloud: {e}")
 
 
+def detect_prompt_injection(prompt: str) -> bool:
+    """
+    Detecta tentativas comuns de Prompt Injection em português e inglês.
+    """
+    p_lower = prompt.lower()
+    
+    patterns = [
+        # ignore/esqueça seguido de 0 a 3 palavras e depois palavra-chave
+        r"\b(ignore|ignorar|esque[cç]a|esque[cç]er|esquece|forget|override|bypass|sobrepor)\b(?:\s+\w+){0,3}\s+\b(prompt|prompts|instru[cç]ao|instru[cç]ões|instruction|instructions|regra|regras|rule|rules|diretriz|diretrizes|guideline|guidelines|contexto|context|sistema|system|restri[cç]ão|restri[cç]ões|original|originais|anterior|anteriores)\b",
+        # ignore/esqueça seguido de tudo/all/everything
+        r"\b(ignore|ignorar|esque[cç]a|esque[cç]er|forget)\b\s+(?:tudo|all|everything)\b",
+        # system override / override system
+        r"\b(system\s+override|override\s+system)\b"
+    ]
+    
+    for pattern in patterns:
+        if re.search(pattern, p_lower, re.IGNORECASE | re.DOTALL):
+            return True
+            
+    return False
+
+
 # ─── RAGProvider ──────────────────────────────────────────────────────────────
 
 class RAGProvider(BaseAIProvider):
@@ -130,6 +152,29 @@ class RAGProvider(BaseAIProvider):
         username = kwargs.get("username", "desconhecido")
         channel = kwargs.get("channel", "desconhecido")
         command = kwargs.get("command", "desconhecido")
+
+        # ─── Validação de Entrada (Prompt Injection Prevention) ────────────────
+        if detect_prompt_injection(prompt):
+            print(f"[SECURITY ALERT] Bloqueando prompt do usuário {username}. Tentativa de Prompt Injection detectada.")
+            
+            warning_msg = (
+                "⚠️ **Erro de Segurança (Prompt Injection):** A sua mensagem foi identificada "
+                "pelo sistema de proteção de segurança do DSE.Assist como uma tentativa de injeção "
+                "de prompt (manipulação de instruções) e foi bloqueada."
+            )
+            
+            # Loga a tentativa como REJECTED
+            log_interaction(
+                user_id=user_id,
+                username=username,
+                channel=channel,
+                command=command,
+                prompt=prompt,
+                retrieved_sources=[],
+                response=f"BLOQUEADO: Tentativa de Prompt Injection detectada no input do usuário.",
+                status="REJECTED",
+            )
+            return warning_msg
 
         # Busca contexto em paralelo com o provider base
         contexts = await self._retrieve_context(prompt)
