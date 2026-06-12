@@ -1,0 +1,12 @@
+discord.py>=2.3.0
+python-dotenv>=1.0.0
+
+# Provedores de IA — instale apenas o que for usar
+google-generativeai>=0.8.0   # Gemini (AI_PROVIDER=gemini)
+openai>=1.0.0                 # OpenAI (AI_PROVIDER=openai)
+groq>=0.9.0                   # Groq  (AI_PROVIDER=groq)
+
+aiohttp>=3.9.0
+
+# RAG / Vector Database
+chromadb>=1.5.0               # Chroma Cloud (busca semântica + RAG)

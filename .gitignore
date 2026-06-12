@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments & Private credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Database files & RAG temporary items
+test_security_audit.jsonl
+security_audit.jsonl
+
+# Logs
+*.log
+logs/
+
+# IDE files
+.vscode/
+.idea/
+.project
+.pydevproject
+.settings/
+
+# OS specific files
+.DS_Store
+Thumbs.db
