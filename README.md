@@ -1,5 +1,7 @@
 # DSE.Assist (DSE Bot) — IA, RAG e Segurança para Comunidades de Dados
 
+![Versão](https://img.shields.io/badge/vers%C3%A3o-v1.2.0-blueviolet)
+
 O **DSE.Assist** é o assistente oficial da comunidade **Data Science Enthusiasts (DSE)** no Discord. Desenvolvido em Python, o bot integra Inteligência Artificial avançada com busca semântica em banco vetorial (**RAG**) e implementa uma arquitetura robusta de **segurança cibernética** contra ataques modernos como *Prompt Injection* e *RAG Poisoning*.
 
 ---
@@ -20,6 +22,14 @@ No canal configurado (padrão `ia-comunidade`), o bot responde a qualquer mensag
 
 ### 3. Boas-Vindas Dinâmicas
 Ao entrar no servidor, novos membros recebem um embed personalizado de boas-vindas com orientações de início.
+
+### 4. Painel Web Administrativo (Dashboard)
+Uma interface web de página única (SPA) com tema escuro e visual premium que permite monitorar e configurar o assistente em tempo real:
+* **Uptime e Latência**: Monitoramento do tempo de atividade e tempo de resposta da API do Discord.
+* **Métricas e Gráficos**: Série temporal interativa detalhando o volume de interações diárias (chamadas aprovadas, barradas por segurança e erros).
+* **Hot Reload de Configurações**: Altere o modelo da IA (provedores Gemini, OpenAI e Groq), chaves de API, canais de atuação e parâmetros de RAG em tempo de execução sem reiniciar o bot.
+* **Auditor Criptográfico**: Validador que atesta a integridade do ledger (`security_audit.jsonl`) recalculando as assinaturas SHA-256 de todas as interações.
+* **Volumetria do Chroma**: Contadores visuais exibindo a quantidade de chunks indexados na base vetorial (RAG e Histórico).
 
 ---
 
@@ -57,6 +67,10 @@ bot_discord_dse/
 ├── .env                          # Variáveis de ambiente locais (não versionado)
 ├── .env.example                  # Template das configurações
 ├── .gitignore                    # Regras de exclusão de arquivos sensíveis
+│
+├── dashboard/                    # 🖥️ Painel administrativo web (novo)
+│   ├── server.py                 # API REST e servidor web aiohttp
+│   └── static/                   # Interface SPA (HTML, CSS, JS e Chart.js)
 │
 ├── ai_providers/                 # 🔌 Sistema modular de IAs
 │   ├── __init__.py               # Factory de provedores
@@ -143,7 +157,7 @@ python migration.py --query "o que é overfitting?"
 
 ## 🚀 Como Iniciar o Bot
 
-Para ligar o bot no Discord:
+Para ligar o bot no Discord e iniciar o painel web administrativo:
 ```bash
 python bot.py
 ```
@@ -155,9 +169,12 @@ Você deverá ver a saída indicando a conexão e sincronização com sucesso no
 [IA] Provider ativo: Google Gemini (gemini-2.5-flash) + RAG
 [OK] Cog carregado: cogs.ai_commands
 [OK] Cog carregado: cogs.community
-[OK] Bot conectado como DSE Bot (ID: ...)
+[DASHBOARD] Painel Web rodando em http://127.0.0.1:5000
+[OK] Bot conectado como DSE_BOT#9020 (ID: ...)
 [OK] 8 comandos slash sincronizados.
 ```
+
+O dashboard administrativo web estará disponível no seu navegador em: **`http://127.0.0.1:5000`**.
 
 ---
 
