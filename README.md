@@ -31,6 +31,25 @@ Uma interface web de página única (SPA) com tema escuro e visual premium que p
 * **Auditor Criptográfico**: Validador que atesta a integridade do ledger (`security_audit.jsonl`) recalculando as assinaturas SHA-256 de todas as interações.
 * **Volumetria do Chroma**: Contadores visuais exibindo a quantidade de chunks indexados na base vetorial (RAG e Histórico).
 
+#### 📸 Capturas de Tela do Dashboard
+Aqui estão alguns exemplos visuais das abas e funções do painel web administrativo:
+
+##### Painel de Controle Principal (Dashboard)
+Interface principal exibindo o status do bot, latência, uptime, gráficos de interações diárias, rankings de usuários/comandos ativos e o validador de integridade.
+![Dashboard Principal](imgs/Dashboard%201917x907.png)
+
+##### Configurações da IA (Provedor)
+Formulário dinâmico para ajustar os provedores de modelo de linguagem base (Gemini, OpenAI, Groq), chaves de API e canais de chat/boas-vindas do Discord.
+![Configuração IA](imgs/Provedor%20IA%201917x907.png)
+
+##### Parâmetros do Mecanismo RAG
+Ajuste fino do corte de similaridade mínima, número de chunks buscados e credenciais do banco vetorial Chroma, acompanhado por contadores de volumetria ativa.
+![Busca RAG](imgs/Busca%20RAG%201917x907.png)
+
+##### Logs de Auditoria do Ledger
+Grade detalhada e buscável de interações registradas no log imutável de segurança, permitindo inspecionar prompts, respostas e hashes SHA-256 de cada transação.
+![Logs de Auditoria](imgs/Logs%20de%20Auditoria%201917x907.png)
+
 ---
 
 ## 🔒 Arquitetura de Segurança Cibernética
