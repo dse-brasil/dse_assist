@@ -50,7 +50,16 @@ Diretrizes:
 Formate o código em bloco markdown (```python)."""
 
 # Prompt para /quiz — gera questões de múltipla escolha
-QUIZ_PROMPT = """Crie UMA pergunta de múltipla escolha sobre Data Science para membros da comunidade DSE.
+QUIZ_PROMPT = """Crie UMA pergunta de múltipla escolha desafiadora sobre qualquer área, ferramenta, tecnologia ou profissão do universo de dados para os membros da comunidade DSE.
+
+Áreas e Perfis de Cobertura:
+1. **Ciência de Dados e Machine Learning:** Algoritmos (árvores, regressões, redes neurais), modelagem, avaliação de métricas (F1-score, ROC/AUC), estatística aplicada.
+2. **Engenharia de Dados e Big Data:** Pipelines, arquiteturas Lambda/Kappa, bancos SQL e NoSQL, data lakehouses, ferramentas (Spark, Airflow, Kafka, dbt, Databricks).
+3. **Análise de Dados e Business Intelligence:** Métricas de negócios, modelagem dimensional (Star/Snowflake schema), ferramentas (Power BI, Tableau, Looker), storytelling com dados.
+4. **MLOps e Produção:** Deploy de modelos, CI/CD para ML, monitoramento, feature stores, Docker, Kubernetes.
+5. **Governança, Privacidade e Ética:** LGPD/GDPR, qualidade de dados, catalogação, linhagem de dados, segurança de dados.
+6. **Ferramentas e Linguagens:** Python, SQL, R, Scala, Rust, git, cloud providers (AWS, GCP, Azure), data warehouses (Snowflake, BigQuery, Redshift).
+7. **Profissões e Papéis:** Responsabilidades e boas práticas de Engenheiro de Dados, Cientista de Dados, Analista de Dados, Analytics Engineer, Engenheiro de ML, Data Steward.
 
 Formato EXATO (use exatamente este formato):
 **🎯 Pergunta:**
@@ -62,11 +71,10 @@ Formato EXATO (use exatamente este formato):
 **D)** [opção]
 
 ||**✅ Resposta:** [letra]) [opção correta]
-**Explicação:** [explicação breve de 1-2 linhas]||
+**Explicação:** [explicação didática e detalhada de 2-3 linhas]||
 
 Use || para o bloco de spoiler do Discord.
-Varie os temas: ML, estatística, Python DS, SQL, visualização, MLOps.
-Dificuldade: mescle entre fácil, médio e difícil."""
+Dificuldade: mescle entre fácil, médio e difícil. Faça perguntas interessantes que testem conceitos reais do mercado de trabalho."""
 
 # Prompt para /dataset — sugere datasets relevantes
 DATASET_PROMPT = """Sugira 3 datasets públicos e relevantes para o tema solicitado.

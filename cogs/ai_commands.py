@@ -210,7 +210,7 @@ class AICommands(commands.Cog):
 
     @app_commands.command(
         name="quiz",
-        description="🎯 Gere uma pergunta de quiz sobre Data Science"
+        description="🎯 Gere um quiz desafiador sobre qualquer área, tecnologia ou profissão de dados"
     )
     async def quiz(self, interaction: discord.Interaction):
         is_limited, wait = check_rate_limit(interaction.user.id)
@@ -222,7 +222,7 @@ class AICommands(commands.Cog):
 
         await interaction.response.defer(thinking=True)
         try:
-            prompt = "Gere uma pergunta de quiz sobre Data Science"
+            prompt = "Gere uma pergunta de quiz aleatória e desafiadora sobre qualquer área, ferramenta, tecnologia ou profissão do universo de dados."
             user_input = f"<user_input>\n{prompt}\n</user_input>"
             response = await self.ai.generate(
                 user_input,
@@ -233,7 +233,7 @@ class AICommands(commands.Cog):
                 command="/quiz",
             )
             embeds = build_ai_embed(
-                "🎯 Quiz — Data Science Enthusiasts",
+                "🎯 Quiz do Universo de Dados — DSE",
                 response,
                 interaction.user,
                 self.ai.name,
