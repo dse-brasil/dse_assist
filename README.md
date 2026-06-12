@@ -198,6 +198,13 @@ O dashboard administrativo web estará disponível no seu navegador em: **`http:
 
 ---
 
+## 👥 Colaboradores
+
+Atualmente, o projeto é mantido e desenvolvido por:
+* **Fernando Torres Ferreira Silva** ([@fertorresfs](https://github.com/fertorresfs)) — Idealizador e desenvolvedor ativo, responsável pela arquitetura do bot, integração de RAG, segurança e painel administrativo web.
+
+---
+
 ## ⚖️ Licença
 
 Este projeto é de uso interno e educacional da comunidade **Data Science Enthusiasts (DSE)**. Consulte as políticas internas de contribuição antes de realizar pull requests.
