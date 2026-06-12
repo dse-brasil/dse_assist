@@ -54,6 +54,50 @@ Os trechos de dados abaixo foram encontrados na base de conhecimento da comunida
     return system_prompt + rag_suffix
 
 
+
+def _sync_save_interaction_to_chroma(
+    user_id: int,
+    username: str,
+    channel: str,
+    command: str,
+    prompt: str,
+    response: str,
+):
+    """Grava a interação na coleção dse_discord_history de forma síncrona no Chroma Cloud."""
+    try:
+        from ai_providers.chroma_client import get_or_create_collection, COLLECTION_DISCORD
+        import uuid
+        from datetime import datetime, timezone
+
+        # Limpa o prompt removendo as tags estruturais XML se existirem
+        clean_prompt = prompt.replace("<user_input>", "").replace("</user_input>", "").strip()
+
+        document_content = (
+            f"Pergunta de {username} no canal #{channel} (comando: {command}):\n{clean_prompt}\n\n"
+            f"Resposta do assistente:\n{response}"
+        )
+
+        collection = get_or_create_collection(COLLECTION_DISCORD)
+        doc_id = f"interaction_{uuid.uuid4()}"
+
+        collection.add(
+            ids=[doc_id],
+            documents=[document_content],
+            metadatas=[{
+                "user_id": str(user_id),
+                "username": username,
+                "channel": channel,
+                "command": command,
+                "doc_type": "discord_interaction",
+                "source": "discord",
+                "ingested_at": datetime.now(timezone.utc).isoformat()
+            }]
+        )
+        print(f"[RAG] Interacao persistida no Chroma Cloud (colecao: {COLLECTION_DISCORD})")
+    except Exception as e:
+        print(f"[RAG] Erro ao salvar interacao no Chroma Cloud: {e}")
+
+
 # ─── RAGProvider ──────────────────────────────────────────────────────────────
 
 class RAGProvider(BaseAIProvider):
@@ -158,6 +202,20 @@ class RAGProvider(BaseAIProvider):
             response=response,
             status="APPROVED",
         )
+
+        # Salva a interação no Chroma em background (thread pool)
+        loop = asyncio.get_event_loop()
+        loop.run_in_executor(
+            None,
+            _sync_save_interaction_to_chroma,
+            user_id,
+            username,
+            channel,
+            command,
+            prompt,
+            response,
+        )
+
         return response
 
     # ── Busca no Chroma (sync executada em thread pool) ────────────────────────

@@ -18,10 +18,6 @@ from cogs.utils import (
     build_rate_limit_embed,
 )
 
-# Lê configurações do .env (com fallbacks razoáveis)
-AI_CHANNEL_NAME: str = os.getenv("AI_CHANNEL_NAME", "ia-comunidade")
-WELCOME_CHANNEL_NAME: str = os.getenv("WELCOME_CHANNEL_NAME", "geral")
-
 # Comprimento mínimo de mensagem para acionar a IA no canal livre
 MIN_MESSAGE_LEN = 5
 
@@ -41,8 +37,11 @@ class Community(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         """Envia mensagem de boas-vindas quando um novo membro entra no servidor."""
+        welcome_channel = os.getenv("WELCOME_CHANNEL_NAME", "geral")
+        ai_channel = os.getenv("AI_CHANNEL_NAME", "ia-comunidade")
+        
         channel = discord.utils.get(
-            member.guild.text_channels, name=WELCOME_CHANNEL_NAME
+            member.guild.text_channels, name=welcome_channel
         )
         if not channel:
             return
@@ -52,7 +51,7 @@ class Community(commands.Cog):
             description=(
                 f"É um prazer ter você na comunidade **Data Science Enthusiasts**, {member.mention}! 🎉\n\n"
                 "**Por onde começar:**\n"
-                f"🤖 `#{AI_CHANNEL_NAME}` — Converse com a IA livremente sobre DS\n"
+                f"🤖 `#{ai_channel}` — Converse com a IA livremente sobre DS\n"
                 "📋 `/ask` — Tire dúvidas técnicas de DS/ML/Python\n"
                 "📚 `/explain` — Entenda conceitos com explicações didáticas\n"
                 "🗺️ `/roadmap` — Descubra seu caminho de estudos\n"
@@ -77,7 +76,8 @@ class Community(commands.Cog):
             return
 
         # Só processa mensagens no canal de IA configurado
-        if message.channel.name != AI_CHANNEL_NAME:
+        ai_channel = os.getenv("AI_CHANNEL_NAME", "ia-comunidade")
+        if message.channel.name != ai_channel:
             return
 
         # Ignora mensagens muito curtas (emojis, "ok", "oi", etc.)

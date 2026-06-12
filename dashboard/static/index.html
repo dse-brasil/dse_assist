@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSE.Assist — Painel de Controle</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <div class="logo-text">
+                        <span class="logo-main">DSE.Assist</span>
+                        <span class="logo-sub">Controle e Métricas</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="9" rx="1"/>
+                        <rect x="14" y="3" width="7" height="5" rx="1"/>
+                        <rect x="14" y="12" width="7" height="9" rx="1"/>
+                        <rect x="3" y="16" width="7" height="5" rx="1"/>
+                    </svg>
+                    Dashboard
+                </button>
+                <button class="nav-item" data-tab="config-ia">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        <circle cx="12" cy="12" r="4"/>
+                    </svg>
+                    Provedor IA
+                </button>
+                <button class="nav-item" data-tab="config-rag">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                    Busca RAG
+                </button>
+                <button class="nav-item" data-tab="logs">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                    Logs de Auditoria
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="bot-info-card">
+                    <div class="status-indicator online" id="bot-status-dot"></div>
+                    <div class="bot-info-text">
+                        <div class="bot-name" id="bot-name-display">Carregando...</div>
+                        <div class="bot-status-label" id="bot-status-text">Conectando...</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-title-container">
+                    <h1 id="page-title">Dashboard</h1>
+                    <p class="header-subtitle" id="page-subtitle">Visão geral do desempenho e saúde do assistente</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary btn-icon" id="btn-refresh-stats">
+                        <svg class="btn-svg-icon spin-on-click" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                        </svg>
+                        Sincronizar
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Tab -->
+            <section id="tab-dashboard" class="tab-panel active">
+                <!-- Metrics Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Total de Interações</span>
+                            <div class="metric-icon-wrapper primary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="val-total-req">-</div>
+                        <div class="metric-change">Soma de todos os comandos e mensagens</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Interações Aprovadas</span>
+                            <div class="metric-icon-wrapper success">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-value text-success" id="val-approved-req">-</div>
+                        <div class="metric-change" id="pct-approved">-</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Barradas por Segurança</span>
+                            <div class="metric-icon-wrapper danger">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-value text-danger" id="val-rejected-req">-</div>
+                        <div class="metric-change" id="pct-rejected">-</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-title">Falhas técnicas</span>
+                            <div class="metric-icon-wrapper warning">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="metric-value text-warning" id="val-error-req">-</div>
+                        <div class="metric-change" id="pct-error">-</div>
+                    </div>
+                </div>
+
+                <!-- Info Cards Section -->
+                <div class="dashboard-rows-grid">
+                    <!-- Column 1: Chart and stats -->
+                    <div class="grid-col-2-3">
+                        <div class="card glass-card chart-card">
+                            <div class="card-header">
+                                <h3>Volume de Interações Diárias</h3>
+                                <p class="card-subtitle">Frequência e status das chamadas ao assistente</p>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="dailyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Crypto Integrity and Bot Details -->
+                    <div class="grid-col-1-3">
+                        <!-- Integrity Certificate Card -->
+                        <div class="card glass-card integrity-card">
+                            <div class="card-header">
+                                <h3>Ledger de Auditoria</h3>
+                                <p class="card-subtitle">Veracidade criptográfica dos logs (WORM)</p>
+                            </div>
+                            <div class="integrity-badge-container">
+                                <div class="integrity-badge loading" id="integrity-badge">
+                                    <div class="spinner"></div>
+                                    <span>Verificando Integridade...</span>
+                                </div>
+                            </div>
+                            <div class="integrity-footer">
+                                <button class="btn btn-primary btn-full" id="btn-run-audit">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    </svg>
+                                    Validar Ledger (SHA-256)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- System Details Card -->
+                        <div class="card glass-card info-card">
+                            <div class="card-header">
+                                <h3>Detalhes da Instância</h3>
+                            </div>
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <span class="info-label">Latência do Bot</span>
+                                    <span class="info-val" id="inst-latency">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Tempo Ativo (Uptime)</span>
+                                    <span class="info-val" id="inst-uptime">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Servidores Conectados</span>
+                                    <span class="info-val" id="inst-servers">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Provedor Ativo</span>
+                                    <span class="info-val badge-provider" id="inst-provider">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Base de Conhecimento (RAG)</span>
+                                    <span class="info-val" id="chroma-kb-count">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Histórico no Chroma</span>
+                                    <span class="info-val" id="chroma-dh-count">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rankings Row -->
+                <div class="dashboard-rows-grid mt-4">
+                    <div class="grid-col-1-2">
+                        <div class="card glass-card list-card">
+                            <div class="card-header">
+                                <h3>Usuários Mais Ativos</h3>
+                                <p class="card-subtitle">Membros com maior número de requisições</p>
+                            </div>
+                            <div class="ranking-list" id="ranking-users">
+                                <div class="loading-placeholder">Carregando dados...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-col-1-2">
+                        <div class="card glass-card list-card">
+                            <div class="card-header">
+                                <h3>Comandos Mais Utilizados</h3>
+                                <p class="card-subtitle">Frequência de chamadas por tipo de comando</p>
+                            </div>
+                            <div class="ranking-list" id="ranking-commands">
+                                <div class="loading-placeholder">Carregando dados...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Config IA Tab -->
+            <section id="tab-config-ia" class="tab-panel">
+                <div class="card glass-card form-card">
+                    <div class="card-header border-bottom">
+                        <h3>Provedor de Inteligência Artificial</h3>
+                        <p class="card-subtitle">Gerencie o modelo do LLM utilizado para responder às dúvidas dos usuários</p>
+                    </div>
+                    <form id="form-config-ia">
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="AI_PROVIDER">Provedor de IA</label>
+                                <select id="AI_PROVIDER" name="AI_PROVIDER" class="form-control">
+                                    <option value="gemini">Google Gemini (Recomendado)</option>
+                                    <option value="openai">OpenAI GPT</option>
+                                    <option value="groq">Groq (Llama / Mixtral)</option>
+                                </select>
+                                <span class="help-text">Escolha qual API processará as requisições de conversas.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="AI_MODEL">Modelo da IA</label>
+                                <input type="text" id="AI_MODEL" name="AI_MODEL" class="form-control" placeholder="Ex: gemini-2.5-flash">
+                                <span class="help-text">O identificador exato do modelo na API. Deixe em branco para usar o padrão.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="AI_API_KEY">Chave de API (API Key)</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="AI_API_KEY" name="AI_API_KEY" class="form-control" placeholder="••••••••••••••••••••••••">
+                                    <button type="button" class="btn-toggle-password" tabindex="-1">
+                                        <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span class="help-text">Insira a chave obtida no painel da plataforma selecionada. Mantida de forma segura.</span>
+                            </div>
+                        </div>
+
+                        <div class="card-header border-bottom border-top mt-4">
+                            <h3>Canais do Discord</h3>
+                            <p class="card-subtitle">Defina onde o bot atua no seu servidor</p>
+                        </div>
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="AI_CHANNEL_NAME">Canal de Chat Livre</label>
+                                <input type="text" id="AI_CHANNEL_NAME" name="AI_CHANNEL_NAME" class="form-control" placeholder="ia-comunidade">
+                                <span class="help-text">Canal onde o bot responde a qualquer mensagem sem necessidade de comando.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="WELCOME_CHANNEL_NAME">Canal de Boas-Vindas</label>
+                                <input type="text" id="WELCOME_CHANNEL_NAME" name="WELCOME_CHANNEL_NAME" class="form-control" placeholder="geral">
+                                <span class="help-text">Canal onde novos membros são anunciados com o embed interativo.</span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="btn-save-ia">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                                Salvar e Aplicar (Hot Reload)
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Config RAG Tab -->
+            <section id="tab-config-rag" class="tab-panel">
+                <div class="card glass-card form-card">
+                    <div class="card-header border-bottom">
+                        <h3>Mecanismo de RAG (Busca Semântica)</h3>
+                        <p class="card-subtitle">Configure a base de conhecimento dinâmica que o assistente consulta para responder</p>
+                    </div>
+                    <div class="rag-status-container border-bottom" style="padding: 1.5rem; display: flex; gap: 2rem;">
+                        <div style="flex: 1;">
+                            <span class="help-text" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Documentos RAG (dse_knowledge_base)</span>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary); margin-top: 0.25rem;" id="rag-kb-badge">0 chunks</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <span class="help-text" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 600;">Histórico Gravado (dse_discord_history)</span>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-success); margin-top: 0.25rem;" id="rag-dh-badge">0 itens</div>
+                        </div>
+                    </div>
+                    <form id="form-config-rag">
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label class="checkbox-label-container">
+                                    <input type="checkbox" id="RAG_ENABLED" name="RAG_ENABLED">
+                                    <span class="checkbox-custom"></span>
+                                    <div class="checkbox-text-wrapper">
+                                        <span class="checkbox-title">Habilitar Recuperação RAG</span>
+                                        <span class="checkbox-desc">Quando ativado, o bot pesquisará na base de dados local antes de responder.</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-6">
+                                    <label for="RAG_COLLECTION">Nome da Coleção (Chroma)</label>
+                                    <input type="text" id="RAG_COLLECTION" name="RAG_COLLECTION" class="form-control" placeholder="dse_knowledge_base">
+                                    <span class="help-text">Nome da coleção no banco vetorial onde os dados estão salvos.</span>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="RAG_N_RESULTS">Quantidade Máxima de Chunks</label>
+                                    <input type="number" id="RAG_N_RESULTS" name="RAG_N_RESULTS" class="form-control" min="1" max="10" placeholder="4">
+                                    <span class="help-text">Número de blocos de contexto recuperados a cada pergunta.</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="RAG_MIN_SIMILARITY">Similaridade Mínima (Corte): <span id="label-sim-val">0.40</span></label>
+                                <div class="slider-wrapper">
+                                    <span>0.00</span>
+                                    <input type="range" id="RAG_MIN_SIMILARITY" name="RAG_MIN_SIMILARITY" min="0.00" max="1.00" step="0.05" class="slider-control">
+                                    <span>1.00</span>
+                                </div>
+                                <span class="help-text">Similaridade mínima para que o trecho de texto seja inserido no prompt. Valores maiores exigem maior precisão.</span>
+                            </div>
+                        </div>
+
+                        <div class="card-header border-bottom border-top mt-4">
+                            <h3>Instância do Chroma DB (Chroma Cloud ou Local)</h3>
+                            <p class="card-subtitle">Credenciais de acesso e host do banco de dados vetorial</p>
+                        </div>
+                        <div class="form-section">
+                            <div class="form-group">
+                                <label for="CHROMA_HOST">Host do Chroma</label>
+                                <input type="text" id="CHROMA_HOST" name="CHROMA_HOST" class="form-control" placeholder="api.trychroma.com">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-6">
+                                    <label for="CHROMA_TENANT">Tenant ID</label>
+                                    <input type="text" id="CHROMA_TENANT" name="CHROMA_TENANT" class="form-control">
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="CHROMA_DATABASE">Database Name</label>
+                                    <input type="text" id="CHROMA_DATABASE" name="CHROMA_DATABASE" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="CHROMA_API_KEY">API Key do Chroma</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="CHROMA_API_KEY" name="CHROMA_API_KEY" class="form-control" placeholder="••••••••••••••••••••••••">
+                                    <button type="button" class="btn-toggle-password" tabindex="-1">
+                                        <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="btn-save-rag">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                                Salvar e Sincronizar RAG
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Logs Tab -->
+            <section id="tab-logs" class="tab-panel">
+                <div class="card glass-card logs-table-card">
+                    <div class="card-header justify-between">
+                        <div>
+                            <h3>Transações Recentes</h3>
+                            <p class="card-subtitle">Auditoria de interações registradas no ledger de segurança</p>
+                        </div>
+                        <div class="filter-controls">
+                            <input type="text" id="logs-search" class="form-control compact-input" placeholder="Filtrar por usuário/comando...">
+                            <select id="logs-filter-status" class="form-control compact-input select-status">
+                                <option value="">Todos os Status</option>
+                                <option value="APPROVED">APPROVED (Aprovados)</option>
+                                <option value="REJECTED">REJECTED (Barrados)</option>
+                                <option value="ERROR">ERROR (Erros)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="logs-table">
+                            <thead>
+                                <tr>
+                                    <th>Data / Hora</th>
+                                    <th>Usuário</th>
+                                    <th>Canal</th>
+                                    <th>Comando</th>
+                                    <th>Status de Segurança</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">Carregando transações do ledger...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Log Detail Modal -->
+    <div class="modal-backdrop" id="log-modal">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3>Detalhes da Interação</h3>
+                <button class="modal-close" id="btn-close-modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-content">
+                <div class="meta-row">
+                    <div class="meta-cell">
+                        <span class="meta-label">Usuário:</span>
+                        <span class="meta-value" id="modal-user">-</span>
+                    </div>
+                    <div class="meta-cell">
+                        <span class="meta-label">Canal/Comando:</span>
+                        <span class="meta-value" id="modal-channel-cmd">-</span>
+                    </div>
+                    <div class="meta-cell">
+                        <span class="meta-label">Status:</span>
+                        <span class="meta-value" id="modal-status">-</span>
+                    </div>
+                </div>
+                
+                <div class="log-section">
+                    <h4>Prompt Recebido:</h4>
+                    <pre class="code-preview" id="modal-prompt"></pre>
+                </div>
+
+                <div class="log-section" id="modal-context-section">
+                    <h4>Fontes Recuperadas pelo RAG:</h4>
+                    <div class="sources-tags-container" id="modal-sources"></div>
+                </div>
+
+                <div class="log-section">
+                    <h4>Resposta Gerada:</h4>
+                    <pre class="code-preview" id="modal-response"></pre>
+                </div>
+
+                <div class="hash-ledger-card">
+                    <div class="hash-line">
+                        <span class="hash-title">Prev Hash:</span>
+                        <code class="hash-code" id="modal-prev-hash">-</code>
+                    </div>
+                    <div class="hash-line">
+                        <span class="hash-title">Hash SHA-256:</span>
+                        <code class="hash-code text-primary" id="modal-curr-hash">-</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert toast notification -->
+    <div class="toast-container" id="toast-container"></div>
+    
+    <script src="/static/app.js"></script>
+</body>
+</html>

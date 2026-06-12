@@ -5,12 +5,14 @@ import os
 import sys
 import asyncio
 import discord
+from datetime import datetime, timezone
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 
 from ai_providers import get_provider
 from ai_providers.rag_provider import wrap_with_rag
+from dashboard.server import start_dashboard
 
 # Corrige encoding no terminal Windows para suportar acentos e emojis
 if hasattr(sys.stdout, 'reconfigure'):
@@ -20,7 +22,6 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-AI_CHANNEL = os.getenv("AI_CHANNEL_NAME", "ia-comunidade")
 
 if not TOKEN:
     raise ValueError("DISCORD_TOKEN nao configurado no .env")
@@ -83,12 +84,13 @@ async def on_message(message: discord.Message):
 @bot.tree.command(name="hello", description="Apresenta o DSE Bot")
 async def hello(interaction: discord.Interaction):
     provider_info = bot.ai_provider.name if bot.ai_provider else "Nao configurado"
+    ai_channel = os.getenv("AI_CHANNEL_NAME", "ia-comunidade")
     embed = discord.Embed(
         title="Ola! Eu sou o DSE Bot!",
         description=(
             "Assistente oficial da comunidade **Data Science Enthusiasts**!\n\n"
             "Use `/ajuda` para ver todos os comandos detalhados.\n\n"
-            f"Ou va direto ao canal `#{AI_CHANNEL}` e fale comigo livremente!"
+            f"Ou va direto ao canal `#{ai_channel}` e fale comigo livremente!"
         ),
         color=discord.Color.from_rgb(88, 101, 242),
     )
@@ -101,6 +103,7 @@ async def ajuda(interaction: discord.Interaction):
     """Posta 4 embeds com instrucoes completas de uso."""
 
     provider_info = bot.ai_provider.name if bot.ai_provider else "IA"
+    ai_channel = os.getenv("AI_CHANNEL_NAME", "ia-comunidade")
 
     # ── Embed 1: Apresentacao ─────────────────────────────────────────────────
     e1 = discord.Embed(
@@ -109,7 +112,7 @@ async def ajuda(interaction: discord.Interaction):
             "Ola! Sou o assistente oficial da comunidade **Data Science Enthusiasts**.\n"
             "Estou aqui para ajudar voce a aprender DS, ML, Python e Estatistica!\n\n"
             f"**Tecnologia:** {provider_info}\n"
-            f"**Canal livre:** `#{AI_CHANNEL}`\n"
+            f"**Canal livre:** `#{ai_channel}`\n"
             "**Prefixo dos comandos:** `/`"
         ),
         color=discord.Color.from_rgb(88, 101, 242),
@@ -118,9 +121,9 @@ async def ajuda(interaction: discord.Interaction):
 
     # ── Embed 2: Canal livre ──────────────────────────────────────────────────
     e2 = discord.Embed(
-        title=f"💬 Canal #{AI_CHANNEL} — Conversa Livre com IA",
+        title=f"💬 Canal #{ai_channel} — Conversa Livre com IA",
         description=(
-            f"No canal **#{AI_CHANNEL}** voce nao precisa de nenhum comando!\n"
+            f"No canal **#{ai_channel}** voce nao precisa de nenhum comando!\n"
             "Apenas escreva sua mensagem normalmente e eu respondo.\n\n"
             "**Exemplos do que voce pode perguntar:**\n"
             "```\n"
@@ -207,7 +210,7 @@ async def ajuda(interaction: discord.Interaction):
             "4. /quiz               → teste o que aprendeu\n"
             "5. /dataset [tema]     → encontre dados para seu projeto\n"
             "```\n"
-            f"**Canal livre:** Va ao `#{AI_CHANNEL}` e converse sem precisar de comandos!"
+            f"**Canal livre:** Va ao `#{ai_channel}` e converse sem precisar de comandos!"
         ),
         color=discord.Color.from_rgb(235, 69, 158),
     )
@@ -219,6 +222,9 @@ async def ajuda(interaction: discord.Interaction):
 # ─── Inicialização ────────────────────────────────────────────────────────────
 
 async def main():
+    # Salva o timestamp de início para calcular o uptime
+    bot.start_time = datetime.now(timezone.utc)
+
     try:
         base_provider = get_provider()
         print(f"[IA] Provedor base: {base_provider.name}")
@@ -235,6 +241,9 @@ async def main():
             print(f"[OK] Cog carregado: {cog}")
         except Exception as e:
             print(f"[ERRO] Ao carregar cog '{cog}': {e}")
+
+    # Inicializa o dashboard administrativo web na mesma thread/loop
+    asyncio.create_task(start_dashboard(bot))
 
     await bot.start(TOKEN)
 
