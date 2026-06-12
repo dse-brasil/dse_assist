@@ -54,10 +54,11 @@ Grade detalhada e buscável de interações registradas no log imutável de segu
 
 ## 🔒 Arquitetura de Segurança Cibernética
 
-Projetado sob princípios modernos de segurança de aplicações com LLM, o DSE.Assist implementa três pilares críticos:
+Projetado sob princípios modernos de segurança de aplicações com LLM, o DSE.Assist implementa uma arquitetura de segurança multicamadas:
 
-### 🛡️ 1. Separação Estrita de Dados e Instruções (Prompt Injection Protection)
-Para evitar que atacantes manipulem o comportamento do LLM via prompts diretos ou dados injetados na base vetorial (injeção indireta):
+### 🛡️ 1. Proteção Ativa contra Prompt Injection (Input Validation & Data Isolation)
+Para evitar que atacantes manipulem o comportamento do LLM via prompts diretos (como comandos para ignorar instruções ou requisitar dados restritos de usuários) ou indiretos injetados via RAG:
+* **Filtro de Entrada Ativo (Input Validation):** O sistema intercepta o prompt do usuário antes do processamento pela IA e executa uma varredura com heurísticas regex refinadas buscando por comandos de manipulação e controle (ex: *ignore*, *esqueça*, *forget*, *override*, *bypass*). Caso detectado, a requisição é abortada de imediato (economizando cota de API da IA), respondendo ao usuário com uma mensagem de segurança e registrando o log no ledger como `REJECTED` (computado nas estatísticas de **Barradas por Segurança**).
 * **Tags Semânticas XML:** As entradas de usuários e trechos do RAG são envelopados em delimitadores estruturados (`<user_input>` e `<retrieved_context>`).
 * **System Prompt Blindado:** Os prompts de sistema contam com diretrizes de segurança globais (`DATA_SEPARATION_INSTRUCTION`) que instruem a IA a tratar o conteúdo das tags estritamente como dados passivos de análise, rejeitando qualquer ordem de execução ("ignore as regras anteriores", etc.).
 
