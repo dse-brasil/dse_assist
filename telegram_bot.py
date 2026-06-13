@@ -56,6 +56,24 @@ def parse_quiz_response(response: str) -> tuple[str, str]:
     return response, "Não foi possível carregar a explicação da resposta automaticamente."
 
 
+def format_tg_error_message(e: Exception) -> str:
+    """
+    Retorna uma mensagem de erro amigável para o Telegram,
+    formatando erros de cota (429) de forma clara.
+    """
+    err_str = str(e)
+    if '429' in err_str or 'quota' in err_str.lower():
+        wait = 60
+        match = re.search(r'retry.*?(\d+)s', err_str, re.IGNORECASE)
+        if match:
+            wait = int(match.group(1)) + 5
+        return (
+            f"⏳ **Limite de requisições atingido:** A IA atingiu o limite gratuito temporário de requisições por minuto.\n"
+            f"Por favor, aguarde **{wait} segundos** e tente novamente."
+        )
+    return f"❌ Ocorreu um erro ao processar sua requisição: {err_str[:200]}"
+
+
 # ─── Verificação de Rate Limit ───────────────────────────────────────────────
 
 async def is_rate_limited(update: Update) -> bool:
@@ -141,7 +159,7 @@ async def run_ai_command(
 
     except Exception as e:
         print(f"[TELEGRAM ERRO] Falha no comando {command_name}: {e}")
-        await update.message.reply_text(f"❌ Ocorreu um erro ao processar sua pergunta: {str(e)[:200]}")
+        await update.message.reply_text(format_tg_error_message(e), parse_mode="Markdown")
 
 
 # ─── Comando Handlers ─────────────────────────────────────────────────────────
@@ -263,7 +281,7 @@ async def cmd_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception as e:
         print(f"[TELEGRAM ERRO] Falha ao gerar quiz: {e}")
-        await update.message.reply_text(f"❌ Falha ao criar pergunta: {str(e)[:200]}")
+        await update.message.reply_text(format_tg_error_message(e), parse_mode="Markdown")
 
 
 # ─── Callback Handler (Botões Inline) ────────────────────────────────────────
@@ -318,7 +336,8 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"[TELEGRAM ERRO] Callback roadmap: {e}")
             await context.bot.send_message(
                 chat_id=chat_id,
-                text=f"❌ Erro ao compilar roadmap: {str(e)[:200]}"
+                text=format_tg_error_message(e),
+                parse_mode="Markdown"
             )
 
     # 2. Trata Cliques do Quiz
