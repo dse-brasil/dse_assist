@@ -38,9 +38,23 @@ intents.message_content = True
 intents.members = True
 intents.presences = True
 
-# ─── Bot ──────────────────────────────────────────────────────────────────────
+# ─── Bot Class & Instanciação ──────────────────────────────────────────────────
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+class DSEBot(commands.Bot):
+    async def close(self):
+        # Encerra o bot do Telegram de forma limpa
+        if hasattr(self, "telegram_app"):
+            print("[TELEGRAM] Finalizando bot do Telegram...")
+            try:
+                await self.telegram_app.updater.stop()
+                await self.telegram_app.stop()
+                await self.telegram_app.shutdown()
+                print("[TELEGRAM] Bot do Telegram finalizado com sucesso.")
+            except Exception as e:
+                print(f"[TELEGRAM ERRO] Falha ao encerrar bot do Telegram: {e}")
+        await super().close()
+
+bot = DSEBot(command_prefix="!", intents=intents)
 bot.ai_provider = None
 
 
@@ -244,6 +258,14 @@ async def main():
 
     # Inicializa o dashboard administrativo web na mesma thread/loop
     asyncio.create_task(start_dashboard(bot))
+
+    # Inicializa o bot do Telegram em paralelo se configurado
+    telegram_token = os.getenv("TELEGRAM_TOKEN")
+    if telegram_token and telegram_token != "seu_token_telegram_aqui" and os.getenv("TELEGRAM_ENABLED", "true").lower() == "true":
+        from telegram_bot import start_telegram_bot
+        asyncio.create_task(start_telegram_bot(bot))
+    else:
+        print("[TELEGRAM] Desabilitado ou token nao configurado no .env.")
 
     await bot.start(TOKEN)
 
