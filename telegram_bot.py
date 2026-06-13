@@ -138,6 +138,7 @@ async def run_ai_command(
             username=update.effective_user.username or update.effective_user.first_name,
             channel=update.effective_chat.title or "Telegram Direct",
             command=command_name,
+            platform="telegram",
         )
 
         formatted_response = format_tg_markdown(response)
@@ -258,6 +259,7 @@ async def cmd_quiz(update: Update, context: ContextTypes.DEFAULT_TYPE):
             username=update.effective_user.username or update.effective_user.first_name,
             channel=update.effective_chat.title or "Telegram Direct",
             command="/quiz",
+            platform="telegram",
         )
 
         question, answer = parse_quiz_response(response)
@@ -321,6 +323,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 username=query.from_user.username or query.from_user.first_name,
                 channel=query.message.chat.title or "Telegram Private",
                 command=f"/roadmap {nivel}",
+                platform="telegram",
             )
 
             formatted = format_tg_markdown(response)

@@ -154,6 +154,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const ragDhBadge = document.getElementById('rag-dh-badge');
             if (ragKbBadge) ragKbBadge.textContent = data.chroma_kb_count !== undefined ? `${data.chroma_kb_count} chunks` : '0 chunks';
             if (ragDhBadge) ragDhBadge.textContent = data.chroma_dh_count !== undefined ? `${data.chroma_dh_count} itens` : '0 itens';
+
+            // Update Telegram fields on dashboard
+            const tgStatusEl = document.getElementById('inst-telegram-status');
+            if (tgStatusEl) {
+                const tgStatus = data.telegram_status || 'OFFLINE';
+                tgStatusEl.textContent = tgStatus;
+                if (tgStatus === 'ONLINE') {
+                    tgStatusEl.className = 'info-val text-success font-semibold';
+                    tgStatusEl.style.color = '#10b981';
+                } else {
+                    tgStatusEl.className = 'info-val text-muted';
+                    tgStatusEl.style.color = '';
+                }
+            }
+            const tgNameEl = document.getElementById('inst-telegram-name');
+            if (tgNameEl) {
+                tgNameEl.textContent = data.telegram_bot_name || '-';
+            }
             
         } catch (err) {
             console.error(err);
@@ -536,10 +554,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     statusBadge = `<span class="badge badge-error">${log.status || 'ERROR'}</span>`;
                 }
 
+                const platform = log.platform || 'discord';
+                const platformBadge = platform === 'telegram'
+                    ? '<span class="platform-icon telegram-icon" title="Telegram">✈️</span> '
+                    : '<span class="platform-icon discord-icon" title="Discord">💬</span> ';
+
                 tr.innerHTML = `
                     <td>${localDate}</td>
-                    <td class="font-semibold">${log.username || 'Sistema'}</td>
-                    <td>#${log.channel || 'direct'}</td>
+                    <td class="font-semibold">${platformBadge}${log.username || 'Sistema'}</td>
+                    <td>${platform === 'telegram' ? '' : '#'}${log.channel || 'direct'}</td>
                     <td><code>${log.command || '-'}</code></td>
                     <td>${statusBadge}</td>
                     <td>
@@ -572,8 +595,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function showLogModal(log) {
         const modal = document.getElementById('log-modal');
         
-        document.getElementById('modal-user').textContent = `${log.username || 'Sistema'} (ID: ${log.user_id || '0'})`;
-        document.getElementById('modal-channel-cmd').textContent = `Canal: #${log.channel} | Comando: ${log.command}`;
+        const platform = log.platform || 'discord';
+        const platformLabel = platform === 'telegram' ? '✈️ Telegram' : '💬 Discord';
+        
+        document.getElementById('modal-user').textContent = `${log.username || 'Sistema'} (ID: ${log.user_id || '0'}) [${platformLabel}]`;
+        const channelPrefix = platform === 'telegram' ? '' : '#';
+        document.getElementById('modal-channel-cmd').textContent = `Plataforma: ${platformLabel} | Canal: ${channelPrefix}${log.channel} | Comando: ${log.command}`;
         
         let statusBadge = '';
         if (log.status === 'APPROVED') {

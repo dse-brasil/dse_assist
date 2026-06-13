@@ -62,6 +62,7 @@ def _sync_save_interaction_to_chroma(
     command: str,
     prompt: str,
     response: str,
+    platform: str = "discord",
 ):
     """Grava a interação na coleção dse_discord_history de forma síncrona no Chroma Cloud."""
     try:
@@ -88,8 +89,8 @@ def _sync_save_interaction_to_chroma(
                 "username": username,
                 "channel": channel,
                 "command": command,
-                "doc_type": "discord_interaction",
-                "source": "discord",
+                "doc_type": f"{platform}_interaction",
+                "source": platform,
                 "ingested_at": datetime.now(timezone.utc).isoformat()
             }]
         )
@@ -152,6 +153,7 @@ class RAGProvider(BaseAIProvider):
         username = kwargs.get("username", "desconhecido")
         channel = kwargs.get("channel", "desconhecido")
         command = kwargs.get("command", "desconhecido")
+        platform = kwargs.get("platform", "discord")
 
         # ─── Validação de Entrada (Prompt Injection Prevention) ────────────────
         if detect_prompt_injection(prompt):
@@ -173,6 +175,7 @@ class RAGProvider(BaseAIProvider):
                 retrieved_sources=[],
                 response=f"BLOQUEADO: Tentativa de Prompt Injection detectada no input do usuário.",
                 status="REJECTED",
+                platform=platform,
             )
             return warning_msg
 
@@ -203,6 +206,7 @@ class RAGProvider(BaseAIProvider):
                 retrieved_sources=list(valid_sources),
                 response=f"ERRO: {e}",
                 status="ERROR",
+                platform=platform,
             )
             raise e
 
@@ -233,6 +237,7 @@ class RAGProvider(BaseAIProvider):
                 retrieved_sources=list(valid_sources),
                 response=f"BLOQUEADO: IA tentou citar fontes não fornecidas: {unauthorized_citations}. Resposta barrada: {response}",
                 status="REJECTED",
+                platform=platform,
             )
             return warning_msg
 
@@ -246,6 +251,7 @@ class RAGProvider(BaseAIProvider):
             retrieved_sources=list(valid_sources),
             response=response,
             status="APPROVED",
+            platform=platform,
         )
 
         # Salva a interação no Chroma em background (thread pool)
@@ -259,6 +265,7 @@ class RAGProvider(BaseAIProvider):
             command,
             prompt,
             response,
+            platform,
         )
 
         return response

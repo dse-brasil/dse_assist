@@ -115,6 +115,19 @@ class DashboardServer:
         loop = asyncio.get_event_loop()
         chroma_counts = await loop.run_in_executor(None, _get_chroma_counts)
 
+        telegram_status = "OFFLINE"
+        telegram_bot_name = "-"
+        if hasattr(self.bot, "telegram_app") and self.bot.telegram_app:
+            if self.bot.telegram_app.updater and self.bot.telegram_app.updater.running:
+                telegram_status = "ONLINE"
+            else:
+                telegram_status = "INITIALIZED"
+            if self.bot.telegram_app.bot:
+                try:
+                    telegram_bot_name = f"@{self.bot.telegram_app.bot.username}"
+                except Exception:
+                    pass
+
         status_data = {
             "bot_name": str(self.bot.user) if self.bot.user else "Carregando...",
             "bot_status": "ONLINE" if self.bot.is_ready() else "OFFLINE",
@@ -123,7 +136,9 @@ class DashboardServer:
             "uptime": uptime_str,
             "ai_provider": ai_provider_name,
             "chroma_kb_count": chroma_counts["knowledge_base"],
-            "chroma_dh_count": chroma_counts["discord_history"]
+            "chroma_dh_count": chroma_counts["discord_history"],
+            "telegram_status": telegram_status,
+            "telegram_bot_name": telegram_bot_name,
         }
         return web.json_response(status_data)
 
@@ -244,11 +259,14 @@ class DashboardServer:
 
                 # Contagem de Usuários
                 username = data.get("username", "desconhecido")
-                user_counts[username] = user_counts.get(username, 0) + 1
+                platform = data.get("platform", "discord").lower()
+                user_key = f"{username} ({platform.capitalize()})"
+                user_counts[user_key] = user_counts.get(user_key, 0) + 1
 
                 # Contagem de Comandos
                 cmd = data.get("command", "desconhecido")
-                cmd_counts[cmd] = cmd_counts.get(cmd, 0) + 1
+                cmd_key = f"{cmd} ({platform.capitalize()})"
+                cmd_counts[cmd_key] = cmd_counts.get(cmd_key, 0) + 1
 
                 # Série Temporal Diária
                 ts_str = data.get("timestamp", "")

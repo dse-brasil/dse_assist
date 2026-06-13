@@ -45,6 +45,7 @@ def log_interaction(
     response: str,
     status: str,
     filepath: str = AUDIT_LOG_FILE,
+    platform: str = "discord",
 ) -> str:
     """
     Grava uma entrada no log de auditoria conectada por hash ao registro anterior.
@@ -64,6 +65,7 @@ def log_interaction(
         "retrieved_sources": retrieved_sources,
         "response": response,
         "status": status,
+        "platform": platform,
         "prev_hash": prev_hash,
     }
 
