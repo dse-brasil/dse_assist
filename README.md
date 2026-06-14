@@ -198,6 +198,30 @@ O dashboard administrativo web estará disponível no seu navegador em: **`http:
 
 ---
 
+## 👥 Frentes de Trabalho (Squads)
+
+Para organizar o repositório e distribuir o trabalho sem que o projeto dependa 100% de uma só pessoa, fatiamos as demandas com base na arquitetura da versão 1.2.0. Qualquer membro da comunidade pode escolher uma tarefa (*issue*) de acordo com seu nível e área de interesse:
+
+### 🛡️ AppSec & Segurança
+* **Filtro de Entrada Ativo:** Aprimorar as heurísticas de Regex no Filtro de Entrada Ativo para detecção de injeção de prompt.
+* **Auditoria Imutável:** Manter e auditar o ledger criptográfico (WORM) local (`security_audit.jsonl`).
+* **Bypass de System Prompt:** Testar vulnerabilidades, tentativas de bypass e robustez do prompt de sistema e isolamento XML.
+
+### 🧠 IA & Ciência de Dados
+* **Calibração do RAG:** Calibrar e otimizar a similaridade mínima e a quantidade de chunks na busca semântica do ChromaDB.
+* **Benchmarking de Modelos:** Testar e comparar a performance, latência e custos de diferentes provedores (Gemini, OpenAI, Groq).
+* **Melhoria de Prompts:** Aperfeiçoar a qualidade dos retornos de comandos estruturados como `/roadmap` e `/explain`.
+
+### ⚙️ Engenharia de Dados & Backend
+* **Pipeline de Ingestão:** Otimizar os scripts de migração (`migration.py`) para ingestão de novas fontes de dados (PDFs, Markdown, links).
+* **Fluxo Assíncrono:** Gerenciar o ciclo de vida assíncrono das conexões em paralelo (Discord, Telegram e Servidor Web Aiohttp).
+
+### 💻 Frontend & UI
+* **Design System & Layout:** Melhorar o visual, responsividade e interações da interface SPA do dashboard administrativo.
+* **Visualização de Dados:** Criar novas visualizações no Chart.js detalhando métricas de latência de IA e volumetria por plataforma.
+
+---
+
 ## 👥 Colaboradores
 
 Atualmente, o projeto é mantido e desenvolvido por:
