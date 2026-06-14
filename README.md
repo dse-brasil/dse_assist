@@ -1,8 +1,40 @@
 # DSE.Assist (DSE Bot) — IA, RAG e Segurança para Comunidades de Dados
 
 ![Versão](https://img.shields.io/badge/vers%C3%A3o-v1.2.0-blueviolet)
+[![Arquitetura](https://img.shields.io/badge/docs-arquitetura-blue)](ARCHITECTURE.md)
+[![Contribuição](https://img.shields.io/badge/docs-contribuição-green)](CONTRIBUTING.md)
+[![Segurança](https://img.shields.io/badge/docs-segurança-red)](SECURITY.md)
+[![Roadmap](https://img.shields.io/badge/docs-roadmap-orange)](ROADMAP.md)
+[![Código de Conduta](https://img.shields.io/badge/docs-conduta-lightgrey)](CODE_OF_CONDUCT.md)
 
-O **DSE.Assist** é o assistente oficial da comunidade **Data Science Enthusiasts (DSE)** no Discord. Desenvolvido em Python, o bot integra Inteligência Artificial avançada com busca semântica em banco vetorial (**RAG**) e implementa uma arquitetura robusta de **segurança cibernética** contra ataques modernos como *Prompt Injection* e *RAG Poisoning*.
+O **DSE.Assist** é um assistente de IA open-source focado em **Data Science, IA aplicada e segurança em LLMs**, desenvolvido para auxiliar a comunidade **Data Science Enthusiasts (DSE)**. O sistema integra LLMs, busca semântica em banco vetorial (RAG) e implementa camadas ativas de segurança cibernética (defesas contra *Prompt Injection*, *RAG Poisoning* e auditoria forense criptográfica).
+
+---
+
+## 🛠️ Tecnologias do Projeto
+
+```text
+Python • Discord.py • python-telegram-bot • ChromaDB • RAG
+Gemini • OpenAI • Groq • aiohttp • Chart.js • pytest
+```
+
+---
+
+## 📈 Status do Projeto
+
+Veja o andamento atual das funcionalidades mapeadas para o desenvolvimento do bot:
+
+* **[✔] Discord Bot Integration:** Conectividade e comandos slash nativos no Discord.
+* **[✔] Telegram Integration:** Polling paralelo assíncrono para suporte a canais/grupos no Telegram.
+* **[✔] RAG Engine (ChromaDB):** Ingestão e busca semântica de base de conhecimento.
+* **[✔] Ledger Criptográfico (WORM):** Rastreabilidade criptográfica imutável baseada em hashes SHA-256 de auditoria.
+* **[✔] Dashboard SPA:** Painel administrativo em tempo real para monitoramento e parametrização.
+* **[🚧] Decodificador Sanitizado de Entradas:** Tratador de ofuscação (Base64, Hex) no filtro de segurança.
+* **[🚧] Sistema de Plugins (Skills):** API de carregamento dinâmico de habilidades modulares.
+* **[ ] Memory Layer:** Camada de histórico de conversação para diálogos contínuos.
+* **[ ] RAG Triad Evaluation:** Framework de teste automatizado para avaliação do RAG.
+
+---
 
 ---
 
@@ -198,27 +230,45 @@ O dashboard administrativo web estará disponível no seu navegador em: **`http:
 
 ---
 
-## 👥 Frentes de Trabalho (Squads)
+## 👥 Frentes de Trabalho (Squads por Domínio)
 
-Para organizar o repositório e distribuir o trabalho sem que o projeto dependa 100% de uma só pessoa, fatiamos as demandas com base na arquitetura da versão 1.2.0. Qualquer membro da comunidade pode escolher uma tarefa (*issue*) de acordo com seu nível e área de interesse:
+Para facilitar a colaboração sem centralizar o desenvolvimento, o projeto está estruturado em frentes de trabalho organizadas por domínio técnico. Qualquer colaborador pode atuar em qualquer squad de acordo com seu interesse de desenvolvimento e problemas que queira resolver:
 
-### 🛡️ AppSec & Segurança
-* **Filtro de Entrada Ativo:** Aprimorar as heurísticas de Regex no Filtro de Entrada Ativo para detecção de injeção de prompt.
-* **Auditoria Imutável:** Manter e auditar o ledger criptográfico (WORM) local (`security_audit.jsonl`).
-* **Bypass de System Prompt:** Testar vulnerabilidades, tentativas de bypass e robustez do prompt de sistema e isolamento XML.
+### 🛡️ 1. Segurança (AppSec & Prompt Guard)
+* **Filtro de Entrada Ativo:** Aprimorar as heurísticas regex do interceptador de segurança para evitar bypasses.
+* **Decodificador Sanitizado:** Implementar decodificadores de codificações anômalas (Base64, Hex).
+* **Ledger Criptográfico:** Auditar e manter a cadeia de logs imutável do sistema.
 
-### 🧠 IA & Ciência de Dados
-* **Calibração do RAG:** Calibrar e otimizar a similaridade mínima e a quantidade de chunks na busca semântica do ChromaDB.
-* **Benchmarking de Modelos:** Testar e comparar a performance, latência e custos de diferentes provedores (Gemini, OpenAI, Groq).
-* **Melhoria de Prompts:** Aperfeiçoar a qualidade dos retornos de comandos estruturados como `/roadmap` e `/explain`.
+### 🧠 2. IA, RAG & Dados
+* **Calibração do RAG:** Otimizar parâmetros de similaridade e chunking para textos técnicos no ChromaDB.
+* **Benchmarking:** Testar e comparar custos, latências e respostas entre Gemini, OpenAI e Groq.
+* **Métricas de Qualidade:** Implementar avaliadores automáticos contra alucinações (RAG Triad).
 
-### ⚙️ Engenharia de Dados & Backend
-* **Pipeline de Ingestão:** Otimizar os scripts de migração (`migration.py`) para ingestão de novas fontes de dados (PDFs, Markdown, links).
-* **Fluxo Assíncrono:** Gerenciar o ciclo de vida assíncrono das conexões em paralelo (Discord, Telegram e Servidor Web Aiohttp).
+### ⚙️ 3. Backend & Infraestrutura
+* **Orquestração Assíncrona:** Manter o loop de eventos paralelo saudável (Discord, Telegram e aiohttp).
+* **Camada de Cache:** Desenvolver cache de memória para comandos estáticos para economizar cota de API.
+* **Tratamento de Erros:** Otimizar exceções assíncronas para falhas de rede com os LLMs.
 
-### 💻 Frontend & UI
-* **Design System & Layout:** Melhorar o visual, responsividade e interações da interface SPA do dashboard administrativo.
-* **Visualização de Dados:** Criar novas visualizações no Chart.js detalhando métricas de latência de IA e volumetria por plataforma.
+### 💻 4. Frontend & UI
+* **Painel Web:** Otimizar a experiência do Dashboard administrativo (responsividade e design escuro).
+* **Visualização:** Integrar novos gráficos do Chart.js para detalhar latências e tentativas de ataque.
+
+### 📖 5. Documentação & Onboarding
+* **Guias de Instalação:** Criar documentações visuais passo a passo para setup local do bot.
+* **Organização do Repositório:** Ajudar na escrita de manuais técnicos e tradução de documentações.
+
+### 🧪 6. Testes & Qualidade
+* **Cobertura de Código:** Desenvolver novos testes automatizados com `pytest` para componentes internos.
+* **Simuladores:** Criar scripts mockados para simular interações das APIs sem gastar créditos reais.
+
+---
+
+## 🏆 Desafios da Comunidade (Community Challenges)
+
+Se você quer testar suas habilidades em cenários extremos, confira nossos desafios especiais fixados no GitHub:
+1. **Desafio O Quebrador de Cofres (Segurança):** Encontrar e documentar uma nova técnica de injeção de prompt capaz de burlar o filtro ativo do bot.
+2. **Desafio O Mestre do RAG (IA):** Otimizar a busca vetorial para reduzir falsas respostas ou alucinações em termos complexos de dados.
+3. **Desafio O Velocista (Backend):** Implementar otimizações ou caches que reduzam o tempo de resposta geral do bot em 20%.
 
 ---
 
